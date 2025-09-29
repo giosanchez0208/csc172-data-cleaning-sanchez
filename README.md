@@ -304,7 +304,7 @@ print(f"- Final rows: {df.shape[0]}")
 - Rows before: 1460
 - Rows after: 1303
 
-Video: link
+Video: https://youtu.be/HDDCvlWkQNQ
         
 Quick Notebook template (click to expand)
 # Data Cleaning Notebook Template
