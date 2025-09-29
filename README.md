@@ -1,66 +1,76 @@
 # Data Cleaning with AI Support
 
 ## Student Information
-- Name: GIO KIEFER A. SANCHEZ
-- Course Year: BSCS 4
-- Date: 2025-09-29
+- **Name:** GIO KIEFER A. SANCHEZ  
+- **Course Year:** BSCS 4  
+- **Date:** 2025-09-29
 
 ## Dataset
-- Source: https://www.kaggle.com/competitions/house-prices-advanced-regression-techniques/data
-- Name: House Prices - Advanced Regression Techniques
+- **Source:** https://www.kaggle.com/competitions/house-prices-advanced-regression-techniques/data  
+- **Name:** House Prices - Advanced Regression Techniques
 
 ## Issues found
-- Missing values: [HIGH MISSINGNESS] PoolQC, MiscFeature, Alley, Fence
-                  [MODERATE MISSINGNESS] Lot Frontage
-                  [VALUES DEPENDENT ON A COLUMN FOR THEIR MISSINGNESS (if val=0, DNE)]
-                        Dependent on TotalBsmtSF - BsmtQual, BsmtCond, BsmtExposure, BsmtFinType1, BsmtFinType2, BsmtFinSF1, BsmtFinSF2, BsmtUnfSF, BsmtFullBath, BsmtHalfBath
-                        Dependent on GarageArea - GarageType, GarageYrBlt, GarageFinish, GarageQual, GarageCond 
-                        Dependent on Fireplaces - FireplaceQu
-                        Dependent on PoolArea - PoolQC
-                        Dependent on MasVnrArea - MasVnrType
-                        Dependent on MiscVal - MiscFeature
-- Duplicates: None (Based on ID-inclusive and ID-agnostic checks)
-- Inconsistencies: [MSZoning] "C (all)" must be standardized to "C"
-                   [MSZoning] "Ideally, "Twnhs" should be subclassified into "TwnhsE" and "TwnhsI." Keep "Twnhs" as information is lacking to perform this split.
-                   [Exterior2nd] Contains unexpected classes when crossreferenced with data_description.txt: "CmentBd", "Wd Shng", and "Brk Cmn". As these classes exist in Exterior1st under different names ("CemntBd", "WdShing", "BrkCmn"), we will standardize/correct these class names. 
+- **Missing values:**
+  - **[HIGH MISSINGNESS]** PoolQC, MiscFeature, Alley, Fence  
+  - **[MODERATE MISSINGNESS]** Lot Frontage  
+  - **[VALUES DEPENDENT ON A COLUMN FOR THEIR MISSINGNESS (if val=0, DNE)]**
+    - Dependent on **TotalBsmtSF** → BsmtQual, BsmtCond, BsmtExposure, BsmtFinType1, BsmtFinType2, BsmtFinSF1, BsmtFinSF2, BsmtUnfSF, BsmtFullBath, BsmtHalfBath  
+    - Dependent on **GarageArea** → GarageType, GarageYrBlt, GarageFinish, GarageQual, GarageCond  
+    - Dependent on **Fireplaces** → FireplaceQu  
+    - Dependent on **PoolArea** → PoolQC  
+    - Dependent on **MasVnrArea** → MasVnrType  
+    - Dependent on **MiscVal** → MiscFeature
+- **Duplicates:** None (Based on ID-inclusive and ID-agnostic checks)  
+- **Inconsistencies:**
+  - **[MSZoning]** "C (all)" must be standardized to "C"  
+  - **[MSZoning]** Ideally, "Twnhs" should be subclassified into "TwnhsE" and "TwnhsI." Keep "Twnhs" as information is lacking to perform this split.  
+  - **[Exterior2nd]** Contains unexpected classes when cross-referenced with data_description.txt: "CmentBd", "Wd Shng", and "Brk Cmn". As these classes exist in Exterior1st under different names ("CemntBd", "WdShing", "BrkCmn"), we will standardize/correct these class names.
 
 ## Cleaning steps
-1. Missing values: [HIGH MISSINGNESS] Drop columns
-                   [MODERATE MISSINGNESS] Impute with median
-                   [VALUES DEPENDENT ON A COLUMN FOR THEIR MISSINGNESS] Set to NA where corresponding count column is 0.
-2. Duplicates: No Action Needed
-3. Inconsistencies: [MSZoning] Standardize by replacing "C (all)" with "C".
-                    [Exterior2nd] Correct typos and Inconsistencies.
-                            -> Replace "CmentBd" with "CemntBd".
-                            -> Standardize "Wd Shng" to "WdShing"
-                            -> Standardize "Brk Cmn" to "BrkCmn"
-4. Outliers: After identifying the chosen columns (in SalePrice, LotArea, and GrLivArea) as positively skewed, LOG TRANSFORM was chosen as an appropriate method to make the distributions more normal (symmetrical)
+1. **Missing values:**  
+   - **[HIGH MISSINGNESS]** Drop columns  
+   - **[MODERATE MISSINGNESS]** Impute with median  
+   - **[VALUES DEPENDENT ON A COLUMN FOR THEIR MISSINGNESS]** Set to NA where corresponding count column is 0.
+2. **Duplicates:** No Action Needed
+3. **Inconsistencies:**  
+   - **[MSZoning]** Standardize by replacing `"C (all)"` with `"C"`.  
+   - **[Exterior2nd]** Correct typos and inconsistencies:
+     - Replace `CmentBd` with `CemntBd`.
+     - Standardize `Wd Shng` to `WdShing`.
+     - Standardize `Brk Cmn` to `BrkCmn`.
+4. **Outliers:**  
+   - After identifying the chosen columns (in `SalePrice`, `LotArea`, and `GrLivArea`) as positively skewed, **LOG TRANSFORM** was chosen as an appropriate method to make the distributions more normal (symmetrical).
 
 ## AI prompts used
 
-- Prompt 1:
-"""
-<data_description.txt>
+### Prompt 1
+```
+"<data_description.txt>
     [contents of data_description.txt go here.]
 </data_description.txt>
 given this data_description.txt, I would like to improve this block of code:
 <code>
 # next, let's review the contents of our CSV.
 desc = df.describe()
-print("Statistics:\n")
+print("Statistics:
+")
 print(desc)
 # let's explore this further by reviewing the freq/class in each column.
-print("\n\nValue counts per column:\n")
+print("
+
+Value counts per column:
+")
 for col in df.columns:
-    print(f"\n--- {col} ---")
+    print(f"
+--- {col} ---")
     print(df[col].value_counts(dropna=False).head(20))
 </code>
 I believe that we can (1) express the categorical columns as an array of values and (2) from the dataset df, detect for anomalous data (like classes that shouldn't be there, data that should necessarily be present but are absent, outliers, and so on.)
-Provide the improved version of this block of code. Do so without being overcomplicated and sticking to the original structure of our code. Keep the code clean and readable. This will be going in a python notebook, but I would like to fit this section into one cell (the part highlighting the use of df.describe). I would also like to compare expected classes (as seen in data_description.txt) and look for unexpected content. you're allowed to explicitly write them down as arrays in the code, as I cannot include the data_description.txt file into my repository.
-"""
+Provide the improved version of this block of code. Do so without being overcomplicated and sticking to the original structure of our code. Keep the code clean and readable. This will be going in a python notebook, but I would like to fit this section into one cell (the part highlighting the use of df.describe). I would also like to compare expected classes (as seen in data_description.txt) and look for unexpected content. you're allowed to explicitly write them down as arrays in the code, as I cannot include the data_description.txt file into my repository."
+```
 
-- Generated code:
-"""
+#### Generated code (from Prompt 1)
+```python
 # Define expected categorical values based on data description
 EXPECTED_CATEGORIES = {
     'MSSubClass': [20, 30, 40, 45, 50, 60, 70, 75, 80, 85, 90, 120, 150, 160, 180, 190],
@@ -118,47 +128,54 @@ EXPECTED_CATEGORIES = {
 
 # Review basic statistics
 desc = df.describe()
-print("Statistics:\n")
+print("Statistics:
+")
 print(desc)
 
 # Check for missing values
-print("\n\nMissing values per column:")
+print("
+
+Missing values per column:")
 missing = df.isnull().sum()
 print(missing[missing > 0])
 
 # Review value counts and detect anomalies
-print("\n\nValue counts and data quality checks per column:\n")
+print("
+
+Value counts and data quality checks per column:
+")
 for col in df.columns:
-    print(f"\n--- {col} ---")
+    print(f"
+--- {col} ---")
     value_counts = df[col].value_counts(dropna=False).head(20)
     print(value_counts)
-    
+
     # Check for unexpected categorical values
     if col in EXPECTED_CATEGORIES:
         unique_vals = set(df[col].dropna().unique())
         expected_vals = set(EXPECTED_CATEGORIES[col])
         unexpected_vals = unique_vals - expected_vals
-        
+
         if unexpected_vals:
             print(f"⚠️  UNEXPECTED VALUES: {unexpected_vals}")
-    
+
     # Check for null representations
     null_representations = ['NA', 'None', 'null', 'NULL', '', ' ', 0]
     found_nulls = [repr for repr in null_representations if repr in df[col].values]
     if found_nulls:
         print(f"📝 NULL REPRESENTATIONS: {found_nulls}")
-        
+
     # Check for zeros in areas/sizes where they might be suspicious
     area_columns = ['LotArea', 'GrLivArea', 'TotalBsmtSF', '1stFlrSF', '2ndFlrSF']
     if col in area_columns and (df[col] == 0).any():
         zero_count = (df[col] == 0).sum()
         print(f"⚠️  ZERO VALUES: {zero_count} records")
-    
+
     # Check for negative values (shouldn't exist for most columns)
     if df[col].dtype in ['int64', 'float64'] and (df[col] < 0).any():
         negative_count = (df[col] < 0).sum()
         print(f"⚠️  NEGATIVE VALUES: {negative_count} records")
-        
+
     # Check for outliers using IQR
     if df[col].dtype in ['int64', 'float64']:
         Q1 = df[col].quantile(0.25)
@@ -169,11 +186,12 @@ for col in df.columns:
         outliers = df[(df[col] < lower) | (df[col] > upper)][col]
         if not outliers.empty:
             print(f"⚠️  OUTLIERS: {len(outliers)} values outside [{lower:.2f}, {upper:.2f}]")
-"""
+```
 
+---
 
-- Prompt 2:
-"""
+### Prompt 2
+```
 Reviewing the data, the following issues that need to be cleaned arise:
 
 1. MSZoning codes are all single letters/combinations without parenthesis. We will replace "C (all)" with "C" for consistency.
@@ -210,10 +228,10 @@ Reviewing the data, the following issues that need to be cleaned arise:
    c. Handle low missingness with the NA convention we talked about above (related columns)
 
 My data can be found in ../data/raw_dataset.csv. Given this information, take the data from my raw_dataset. Write a code to perform the cleaning given my instructions above, and export it as ../data/cleaned_dataset.csv.
-"""
+```
 
-- Generated Code:
-
+#### Generated code (from Prompt 2)
+```python
 import pandas as pd
 import numpy as np
 
@@ -295,49 +313,18 @@ df.to_csv('../data/cleaned_dataset.csv', index=False)
 print("Data cleaning completed successfully!")
 print(f"Final dataset shape: {df.shape}")
 
-print(f"\nCleaning Summary:")
+print(f"
+Cleaning Summary:")
 print(f"- Original rows: {pd.read_csv('../data/raw_dataset.csv').shape[0]}")
 print(f"- Final rows: {df.shape[0]}")
+```
 
+---
 
 ## Results
-- Rows before: 1460
-- Rows after: 1303
+- **Rows before:** 1460  
+- **Rows after:** 1303
 
-Video: https://youtu.be/HDDCvlWkQNQ
-        
-Quick Notebook template (click to expand)
-# Data Cleaning Notebook Template
+**Video:** https://youtu.be/HDDCvlWkQNQ
 
-## 1. Import Libraries
-import pandas as pd
-import numpy as np
-
-## 2. Load Dataset
-df = pd.read_csv("../data/raw_dataset.csv")
-df.head()
-
-## 3. Initial Exploration
-df.info()
-df.describe()
-
-## 4. Handle Missing Values
-# Example: fill numeric NaNs with median
-df['column'] = df['column'].fillna(df['column'].median())
-
-## 5. Remove Duplicates
-df = df.drop_duplicates()
-
-## 6. Standardize Formats
-# Example: string formatting
-df['Category'] = df['Category'].str.strip().str.lower()
-
-## 7. Outlier Detection & Treatment
-# Example: IQR method
-Q1 = df['column'].quantile(0.25)
-Q3 = df['column'].quantile(0.75)
-IQR = Q3 - Q1
-filtered = df[~((df['column'] < (Q1 - 1.5 * IQR)) |(df['column'] > (Q3 + 1.5 * IQR)))]
-
-## 8. Save Cleaned Dataset
-filtered.to_csv("../data/cleaned_dataset.csv", index=False)
+---
