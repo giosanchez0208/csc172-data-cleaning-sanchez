@@ -29,9 +29,9 @@
 ## Cleaning steps
 1. **Missing values:**  
    - **[HIGH MISSINGNESS]** Drop columns  
-   - **[MODERATE MISSINGNESS]** Impute with median  
+   - **[MODERATE MISSINGNESS]** Impute with Iterative Median 
    - **[VALUES DEPENDENT ON A COLUMN FOR THEIR MISSINGNESS]** Set to NA where corresponding count column is 0.
-2. **Duplicates:** No Action Needed
+2. **Duplicates:** No Action Needed, Validated from testing
 3. **Inconsistencies:**  
    - **[MSZoning]** Standardize by replacing `"C (all)"` with `"C"`.  
    - **[Exterior2nd]** Correct typos and inconsistencies:
